@@ -12,11 +12,13 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <router-link class="nav-link" :to="{name: 'products'}">
+              <img src="../assets/buylogo.png" style="max-width: 30px">
               Products
             </router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" :to="{name: 'mycart'}">
+              <img src="../assets/carttab.png" style="max-width: 30px">
               My Cart
             </router-link>
           </li>
