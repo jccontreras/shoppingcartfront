@@ -8,6 +8,7 @@
 <script>
 import Top from './components/Top.vue'
 import axios from "axios";
+import {URL_API_REST_CARTS} from "@/store/constants";
 
 export default {
   name: 'App',
@@ -28,7 +29,7 @@ export default {
   //This method creat a new cart when you go into page
   methods: {
     addCart() {
-      axios.post("http://192.168.1.106:9000/api/v1/carts", this.cart)
+      axios.post(URL_API_REST_CARTS, this.cart)
       .then(response => {
         console.log(response)
         this.carts = response.data
