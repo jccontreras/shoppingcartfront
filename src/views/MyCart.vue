@@ -52,23 +52,24 @@ export default {
   },
   methods: {
     getCartList() {
+      this.shoppingcartlist = []
       axios.get(URL_API_REST_PRODUCT_CARTS)
-          .then(response => {
+          .then((response) => {
             console.log(response)
             this.productcart = response.data
             this.productcart.forEach(item => {
-              this.shoppingcart.quantity = item.quantity
-              this.shoppingcart.id = item.id
+              var shop = {}
+              shop.quantity = item.quantity
+              shop.id = item.id
               axios.get(URL_API_REST_PRODUCTS + "/" + item.product_id)
-              .then(response => {
-                this.shoppingcart.nameproduct = response.data.name
-                this.shoppingcart.sku = response.data.sku
-                //var shop = this.shoppingcart
-                console.log(this.shoppingcart.nameproduct)
-                console.log(this.shoppingcart.sku)
-                console.log(this.shoppingcart.quantity)
+              .then((product) => {
+                shop.nameproduct = product.data.name
+                shop.sku = product.data.sku
+                console.log(shop.nameproduct)
+                console.log(shop.sku)
+                console.log(shop.quantity)
 
-                this.shoppingcartlist.push(this.shoppingcart)
+                this.shoppingcartlist.push(shop)
               })
               .catch(e => console.log(e))
             })
