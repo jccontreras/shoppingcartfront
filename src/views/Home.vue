@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    Welcome to My Shopping Cart
+    Super Offerts, 50% off!!!!
   </div>
 </template>
 

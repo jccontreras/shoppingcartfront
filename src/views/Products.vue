@@ -41,6 +41,7 @@
 
 <script>
 import axios from 'axios';
+import {URL_API_REST_PRODUCT_CARTS, URL_API_REST_PRODUCTS} from '../store/constants'
 
 export default {
   name: "Products",
@@ -75,7 +76,7 @@ export default {
   methods: {
     //This methos get List of products
     getProducts() {
-      axios.get('http://192.168.1.106:9000/api/v1/products')
+      axios.get(URL_API_REST_PRODUCTS)
           .then(response => {
             console.log(response)
             this.products = response.data
@@ -88,7 +89,7 @@ export default {
       this.productcarts.cart_id = 1;
       this.productcarts.product_id = product.id;
       this.productcarts.quantity = this.quiantitylist['quant'+product.id]
-      axios.post("http://192.168.1.106:9000/api/v1/productcarts", this.productcarts)
+      axios.post(URL_API_REST_PRODUCT_CARTS, this.productcarts)
           .then(response => {
             console.log(response)
             this.add = true;
