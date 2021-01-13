@@ -11,7 +11,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="pc in shoppingcartlist" :key="pc.id">
+        <tr v-for="(pc, idx) in shoppingcartlist" :key="pc.id">
           <td>
             {{ pc.nameproduct }}
           </td>
@@ -22,7 +22,7 @@
             {{ pc.sku }}
           </td>
           <td>
-            <button type="button" class="btn btn btn-light" @click="editProduct()">
+            <button type="button" class="btn btn btn-light" @click="editProduct(idx)">
               <img src="../assets/editlogo.png" style="max-width: 30px">
             </button>
             <button type="button" class="btn btn btn-light" @click="deleteProduct(pc)">
@@ -38,18 +38,18 @@
       <div class="alert alert-success" role="alert" v-if="changestatus" style="max-width: 400px">
         <label>The cart has been completed.</label>
       </div>
-      <div class="col" v-if="this.edit">
-        <a class="btn" @click="closeEdit()">
+      <div class="col" v-if="edit">
+        <a class="btn" @click="closeEdit">
           <img src="../assets/closelogo.png" style="max-width: 20px">
         </a>
-        <EditProductCart v-bind:property="edit"/>
+        <EditProductCart :cartItem="element" @updated="getCartList"/>
       </div>
       <form @submit.prevent="changeStatus('completed')">
         <div class="col-2">
           <div class="input-group input-group-sm mb-3">
             <span class="input-group-text" id="inputGroup-sizing-sm">Cart Status</span>
             <input type="text" class="form-control" aria-label="Sizing example input"
-                   aria-describedby="inputGroup-sizing-sm" v-model="this.cart.status" disabled>
+                   aria-describedby="inputGroup-sizing-sm" v-model="cart.status" disabled>
           </div>
         </div>
         <div class="col-2">
@@ -77,12 +77,17 @@ export default {
       productcart: null,
       shoppingcartlist: [],
       cart: {},
-      edit: false,
+      element: {},
     }
   },
   mounted() {
     this.getCartList();
     this.getCartStatus(1);
+  },
+  computed: {
+    edit() {
+      return Object.keys(this.element).length;
+    }
   },
   watch: {
     changestatus(val) {
@@ -103,19 +108,25 @@ export default {
           .then(({data}) => {
             this.productcart = data
             this.productcart.forEach(item => {
-              var shop = {}
+              let shop = {}
               shop.quantity = item.quantity
               shop.id = item.id
+              shop.product_id = item.product_id
+              shop.cart_id = item.cart_id
               axios.get(constants.URL_API_REST_PRODUCTS + "/" + item.product_id)
                   .then(({data}) => {
                     shop.nameproduct = data.name
                     shop.sku = data.sku
+                    shop.description = data.description
                     this.shoppingcartlist.push(shop)
                   })
                   .catch(e => console.log(e))
             })
           })
           .catch(e => console.log(e))
+          .finally(() => {
+            this.element = {};
+          })
     },
     getCartStatus(cartId) {
       this.cart = {}
@@ -123,7 +134,7 @@ export default {
           .then(({data}) => {
             this.cart.status = data.status
             this.cart.id = cartId
-            this.statuscart = data.status
+            this.statuscart = this.cart.status
           })
           .catch((e) => console.log(e))
     },
@@ -150,13 +161,11 @@ export default {
           })
           .catch((e) => console.log(e))
     },
-    editProduct() {
-      this.edit = true
-      EditProductCart.getProduct(this.productcart.product_id)
-      EditProductCart.product_cart.quantity = this.productcart.quantity
+    editProduct(idx) {
+      this.element = this.shoppingcartlist[idx];
     },
     closeEdit() {
-      this.edit = false
+      this.element = {};
     }
   }
 }
