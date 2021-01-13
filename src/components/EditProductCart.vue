@@ -11,7 +11,7 @@
           </div>
           <div class="card-body">
             <input type="number" class="count" name="qty" value="1" min="1" style="max-width: 100px"
-                   v-model="product.quantity">
+                   v-model="product.quantity" required>
           </div>
           <div class="card-body">
             <button type="submit" class="btn btn-primary" id="editButton">

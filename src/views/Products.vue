@@ -9,8 +9,8 @@
       <label>The product has been added to the cart</label>
     </div>
     <div class="row gx-5">
-      <div v-for="product in products" :key="product.id" class="col">
-        <form @submit.prevent="addToCart(product)">
+      <div v-for="(product, idx) in products" :key="product.id" class="col">
+        <form @submit.prevent="addToCart(idx)">
           <div class="p-3 border bg-light">
             <div class="card" style="width: 18rem;">
               <div class="card-body">
@@ -21,7 +21,7 @@
               </div>
               <div class="card-body">
                 <input type="number" class="count" name="qty" value="1" min="1" style="max-width: 100px"
-                       v-model="quiantitylist['quant'+product.id]">
+                       v-model="quiantitylist['quant'+product.id]" required>
               </div>
               <div class="card-body">
                 <button type="submit" class="btn btn-primary" id="sendButton">
@@ -47,13 +47,13 @@ export default {
     return {
       error: false,
       add: false,
-      products: null,
+      products: [],
       productcarts: {
         product_id: null,
         cart_id: null,
         quantity: 1,
       },
-      quiantitylist:[],
+      quiantitylist: [],
     }
   },
   mounted() {
@@ -82,11 +82,17 @@ export default {
           .catch(e => console.log(e))
     },
     //This method add to Cart a product
-    addToCart(product) {
-      console.log(product)
+    addToCart(idx) {
+      console.log(idx)
       this.productcarts.cart_id = 1;
-      this.productcarts.product_id = product.id;
-      this.productcarts.quantity = this.quiantitylist['quant'+product.id]
+      this.productcarts.product_id = this.products[idx].id;
+      let q = this.quiantitylist['quant' + this.products[idx].id]
+      console.log("q ==> "+q)
+      if (q === '0') {
+        this.productcarts.quantity = '1'
+      } else {
+        this.productcarts.quantity = this.quiantitylist['quant' + this.products[idx].id]
+      }
       axios.post(URL_API_REST_PRODUCT_CARTS, this.productcarts)
           .then(response => {
             console.log(response)
