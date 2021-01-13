@@ -22,6 +22,9 @@
             {{ pc.sku }}
           </td>
           <td>
+            <button type="button" class="btn btn btn-light" @click="editProduct()">
+              <img src="../assets/editlogo.png" style="max-width: 30px">
+            </button>
             <button type="button" class="btn btn btn-light" @click="deleteProduct(pc)">
               <img src="../assets/deletelogo.png" style="max-width: 30px">
             </button>
@@ -29,10 +32,19 @@
         </tr>
         </tbody>
       </table>
+      <div class="alert alert-danger" role="alert" v-if="this.delete" style="max-width: 400px">
+        <label>The product has been deleted from the cart</label>
+      </div>
       <div class="alert alert-success" role="alert" v-if="changestatus" style="max-width: 400px">
         <label>The cart has been completed.</label>
       </div>
-      <form @submit.prevent="changeStatus()">
+      <div class="col" v-if="this.edit">
+        <a class="btn" @click="closeEdit()">
+          <img src="../assets/closelogo.png" style="max-width: 20px">
+        </a>
+        <EditProductCart v-bind:property="edit"/>
+      </div>
+      <form @submit.prevent="changeStatus('completed')">
         <div class="col-2">
           <div class="input-group input-group-sm mb-3">
             <span class="input-group-text" id="inputGroup-sizing-sm">Cart Status</span>
@@ -41,7 +53,7 @@
           </div>
         </div>
         <div class="col-2">
-          <button type="submit" class="btn btn-warning">Checkout</button>
+          <button type="submit" class="btn btn-warning" :disabled="this.statuscart == 'completed'">Checkout</button>
         </div>
       </form>
     </div>
@@ -51,16 +63,21 @@
 <script>
 import axios from "axios";
 import * as constants from "@/store/constants";
+import EditProductCart from '@/components/EditProductCart.vue'
 
 export default {
-  name: "MyCart",
+  name: "MyCart",components: {
+    EditProductCart,
+  },
   data() {
     return {
-      statuscarts: false,
+      statuscart: "pending",
       changestatus: false,
+      delete: false,
       productcart: null,
       shoppingcartlist: [],
-      cart: {}
+      cart: {},
+      edit: false,
     }
   },
   mounted() {
@@ -71,6 +88,11 @@ export default {
     changestatus(val) {
       setTimeout(() => {
         if (val) this.changestatus = false;
+      }, 3000);
+    },
+    delete(val) {
+      setTimeout(() => {
+        if (val) this.delete = false;
       }, 3000);
     },
   },
@@ -101,6 +123,7 @@ export default {
           .then(({data}) => {
             this.cart.status = data.status
             this.cart.id = cartId
+            this.statuscart = data.status
           })
           .catch((e) => console.log(e))
     },
@@ -110,20 +133,30 @@ export default {
       axios.delete(url)
           .then(response => {
             console.log(response)
+            this.delete = true
             this.getCartList()
           })
           .catch(e => console.log(e))
     },
-    changeStatus() {
+    changeStatus(status) {
       console.log("Entro a completed")
-      this.cart.status = "completed"
+      this.cart.status = status
       axios.put(constants.URL_API_REST_CARTS, this.cart)
           .then(({data}) => {
             console.log(data)
             this.changestatus = true
+            this.statuscart = status
             this.getCartStatus(1)
           })
           .catch((e) => console.log(e))
+    },
+    editProduct() {
+      this.edit = true
+      EditProductCart.getProduct(this.productcart.product_id)
+      EditProductCart.product_cart.quantity = this.productcart.quantity
+    },
+    closeEdit() {
+      this.edit = false
     }
   }
 }

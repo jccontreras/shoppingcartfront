@@ -1,14 +1,12 @@
 <template>
   <div class="container px-4">
     <div class="alert alert-danger" role="alert" v-if="error" style="max-width: 400px">
-      <h4 class="alert-heading">Ups!</h4>
       <label>This has a trouble</label>
       <hr>
       <label class="mb-0">try again later please.</label>
     </div>
     <div class="alert alert-success" role="alert" v-if="add" style="max-width: 400px">
-      <h4 class="alert-heading">Ready!</h4>
-      <label>The product has been added to a cart</label>
+      <label>The product has been added to the cart</label>
     </div>
     <div class="row gx-5">
       <div v-for="product in products" :key="product.id" class="col">
